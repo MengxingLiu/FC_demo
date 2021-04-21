@@ -1,0 +1,46 @@
+#!/bin/tcsh
+
+set subj = $1
+set seed = $2
+set prefix_3dd = PPI.$seed.
+
+# ------------------------------
+# run the regression analysis
+3dDeconvolve -input pb04.$subj.r*.scale+tlrc.HEAD                     \
+    -censor motion_${subj}_censor.1D                                  \
+    -ortvec motion_demean.1D mot_demean                               \
+    -polort 3                                                         \
+    -num_stimts 11                                                     \
+    -stim_times 1 stimuli/AFNI_timing.times.1.txt 'BLOCK(3,1)'                   \
+    -stim_label 1 VpAp                                                 \
+    -stim_times 2 stimuli/AFNI_timing.times.2.txt 'BLOCK(3,1)'                   \
+    -stim_label 2 VpAn                                                 \
+    -stim_times 3 stimuli/AFNI_timing.times.3.txt 'BLOCK(3,1)'                   \
+    -stim_label 3 VnAp                                                 \
+    -stim_times 4 stimuli/AFNI_timing.times.4.txt 'BLOCK(3,1)'                   \
+    -stim_label 4 VnAn                                                 \
+    -stim_times 5 stimuli/AFNI_timing.times.5.txt 'BLOCK(3,1)'                   \
+    -stim_label 5 catch                                                 \
+    -stim_file 6 stimuli/p6.$seed.01.VpAp.rall.PPI.1D                   \
+    -stim_label 6 PPI.VpAp                                             \
+    -stim_file 7 stimuli/p6.$seed.02.VpAn.rall.PPI.1D                   \
+    -stim_label 7 PPI.VpAn                                             \
+    -stim_file 8 stimuli/p6.$seed.03.VnAp.rall.PPI.1D                   \
+    -stim_label 8 PPI.VnAp                                             \
+    -stim_file 9 stimuli/p6.$seed.04.VnAn.rall.PPI.1D                   \
+    -stim_label 9 PPI.VnAn                                             \
+    -stim_file 10 stimuli/p6.$seed.05.catch.rall.PPI.1D                   \
+    -stim_label 10 PPI.PW                                             \
+    -stim_file 11 stimuli/ppi.seed.$seed.1D                                  \
+    -stim_label 11 PPI.seed                                            \
+    -jobs 8                                                           \
+    -gltsym 'SYM: VpAp -VnAn'                                           \
+    -glt_label 1 P-N                                                 \
+    -gltsym 'SYM: PPI.VpAp -PPI.VnAn'                                   \
+    -glt_label 2 PPI:P-N                                              \
+    -fout -tout -x1D ${prefix_3dd}X.xmat.1D -xjpeg ${prefix_3dd}X.jpg \
+    -x1D_uncensored ${prefix_3dd}X.nocensor.xmat.1D                   \
+    -errts ${prefix_3dd}errts.${subj}                                 \
+    -bucket ${prefix_3dd}stats.$subj
+
+
